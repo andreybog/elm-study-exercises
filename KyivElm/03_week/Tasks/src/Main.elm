@@ -1,4 +1,4 @@
-module Main exposing (find, maybeToList, updateList, updateList2, updateListKv)
+module Main exposing (either, find, keepOks, mapOk, maybeToList, updateList, updateListKv)
 
 {-
    > maybeToList (Just 3)
@@ -36,29 +36,6 @@ maybeToList x =
 
 updateList : (a -> Bool) -> (a -> Maybe a) -> List a -> List a
 updateList shouldChange f xs =
-    case xs of
-        x :: tail ->
-            let
-                updateTail =
-                    updateList shouldChange f tail
-            in
-            if shouldChange x then
-                case f x of
-                    Just transformed ->
-                        transformed :: updateTail
-
-                    Nothing ->
-                        updateTail
-
-            else
-                x :: updateTail
-
-        [] ->
-            []
-
-
-updateList2 : (a -> Bool) -> (a -> Maybe a) -> List a -> List a
-updateList2 shouldChange f xs =
     List.filterMap
         (\x ->
             if shouldChange x then
@@ -140,6 +117,16 @@ updateListKv old k f =
             []
 
 
+
+{-
+   keepOks : List (Result a b) -> List b
+   keepOks xss = Debug.todo ""
+
+   > keepOks [Ok 1, Err "bad", Ok 2]
+   [1,2] : List number
+-}
+
+
 keepOks : List (Result a b) -> List b
 keepOks xss =
     case xss of
@@ -153,3 +140,47 @@ keepOks xss =
 
                 Ok v ->
                     v :: keepOks xs
+
+
+
+{-
+   mapOk : (b -> c) -> Result a b -> Result a c
+   mapOk f res = Debug.todo ""
+
+   > mapOk (\x -> x + 1) (Ok 2)
+   Ok 3 : Result a number
+   > mapOk (\x -> x + 1) (Err "str")
+   Err "str" : Result String number
+-}
+
+
+mapOk : (b -> c) -> Result a b -> Result a c
+mapOk f res =
+    case res of
+        Ok v ->
+            Ok (f v)
+
+        Err err ->
+            Err err
+
+
+
+{-
+   either : (a -> c) -> (b -> c) -> Result a b -> c
+   either fa fb res = Debug.todo
+
+   > either (\x -> x + 1) (\x -> x - 1) (Ok 1)
+   0 : number
+   > either (\x -> x + 1) (\x -> x - 1) (Err 1)
+   2 : number
+-}
+
+
+either : (a -> c) -> (b -> c) -> Result a b -> c
+either fa fb res =
+    case res of
+        Ok v ->
+            fb v
+
+        Err e ->
+            fa e
