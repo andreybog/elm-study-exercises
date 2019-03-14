@@ -1,0 +1,117 @@
+1)
+Find last element in a list
+
+> myLast [1,2,3,4]
+Just 4
+
+myLast list = List.head (List.reverse list)
+myLast list = 
+    list 
+        |> List.reverse 
+        |> List.head
+
+
+2)
+Find the last but one element of a list
+
+> myButLast [1,2,3,4]
+Just 3
+
+myButLast list = 
+    list 
+        |> List.reverse
+        |> List.drop 1
+        |> List.head
+
+
+3)
+Find the K'th element of a list
+
+> elementAt [1,2,3] 2
+Just 2
+
+elementAt list index = if index >= 0 then list |> List.drop index |> List.head else Nothing
+
+
+4)
+Find the number of elements of a list
+
+> myLength [123, 456, 789]
+3
+
+myLength = List.length
+
+
+5)
+Reverse a list
+
+> myReverse [1,2,3,4]
+[4,3,2,1]
+
+myReverse = List.reverse
+
+
+6)
+Find out whether a list is a palindrome
+
+> isPalindrome [1,2,4,8,16,8,4,2,1]
+True
+
+isPalindrome list = list == List.reverse list 
+
+
+7)
+Eliminate consecutive duplicates of string elements
+
+> compress "aaaabccaadeeee"
+"abcade"
+
+compress string =
+    String.foldl
+        (\char result ->
+            let
+                stringChar = String.fromChar char
+                sameEnd = String.endsWith stringChar result
+            in
+            if sameEnd then result else result ++ stringChar
+        )
+        ""
+        string
+
+8)
+Drop every N'th element from a string
+
+> dropEvery "abcdefghik" 3
+"abdeghk"
+
+dropEvery string num =
+    if num <= 1 then
+        ""
+    else if String.length string >= num then
+        let
+            head = String.left (num - 1) string
+            tail = String.dropLeft num string
+        in
+        head ++ dropEvery tail num
+    else
+        string
+
+
+9)
+(optional) Insert the 👏 emoji between words
+
+> clap "learning Elm is fun"
+"learning 👏 Elm 👏 is 👏 fun"
+
+clap string =  \
+    string  \
+        |> String.words  \
+        |> List.intersperse "👏"  \
+        |> String.join " "
+
+
+
+
+
+
+
