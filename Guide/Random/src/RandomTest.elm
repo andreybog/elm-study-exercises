@@ -40,7 +40,7 @@ init _ =
 -- UPDATE
 
 
-type alias Face =
+type alias FacePair =
     { one : Int
     , two : Int
     }
@@ -48,7 +48,7 @@ type alias Face =
 
 type Msg
     = Roll
-    | NewFaces Face
+    | GotNewFaces FacePair
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -56,13 +56,35 @@ update msg model =
     case msg of
         Roll ->
             ( model
-            , Random.generate NewFaces (Random.map2 Face (Random.int 1 6) (Random.int 1 6))
+            , Random.generate GotNewFaces facePairGenerator
             )
 
-        NewFaces newFace ->
+        GotNewFaces newFace ->
             ( Model newFace.one newFace.two
             , Cmd.none
             )
+
+
+roll : Random.Generator Int
+roll =
+    Random.int 1 6
+
+
+usuallySix : Random.Generator Int
+usuallySix =
+    Random.weighted
+        ( 10, 1 )
+        [ ( 10, 2 )
+        , ( 10, 3 )
+        , ( 10, 4 )
+        , ( 10, 5 )
+        , ( 80, 6 )
+        ]
+
+
+facePairGenerator : Random.Generator FacePair
+facePairGenerator =
+    Random.map2 FacePair roll usuallySix
 
 
 
@@ -80,13 +102,11 @@ subscriptions model =
 
 view : Model -> Html Msg
 view model =
+    let
+        dieFace1 = String.fromInt model.dieFace1
+        dieFace2 = String.fromInt model.dieFace2
+    in
     div []
-        [ h1 []
-            [ text
-                (String.fromInt model.dieFace1
-                    ++ " "
-                    ++ String.fromInt model.dieFace2
-                )
-            ]
+        [ h1 [] [ text (dieFace1 ++ " " ++ dieFace2) ]
         , button [ onClick Roll ] [ text "Roll" ]
         ]
