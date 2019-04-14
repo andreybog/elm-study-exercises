@@ -1,4 +1,8 @@
-module Main exposing (either, find, keepOks, mapOk, maybeToList, updateList, updateListKv)
+module Main exposing (either, find, keepOks, mapOk, maybeToList, parseDate, parseDate2, updateList, updateListKv)
+
+import Date exposing (Date)
+
+
 
 {-
    > maybeToList (Just 3)
@@ -184,3 +188,28 @@ either fa fb res =
 
         Err e ->
             fa e
+
+
+parseDate : Maybe String -> Maybe Date
+parseDate v =
+    case v of
+        Just s ->
+            case Date.fromIsoString s of
+                Ok date ->
+                    Just date
+
+                Err _ ->
+                    Nothing
+
+        Nothing ->
+            Nothing
+
+
+parseDate2 : Maybe String -> Maybe Date
+parseDate2 v =
+    case v of
+        Just s ->
+            Date.fromIsoString s |> Result.toMaybe
+
+        Nothing ->
+            Nothing
